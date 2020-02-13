@@ -3,4 +3,8 @@
     <string name="cancel_button_text">CANCEL</string>
     <string name="ok_button_text">OK</string>
     <string name="dialog_message_allow_permission">Please allow permissions</string>
+    <string name="main_fragment_title">Конвертер валют</string>
+    <string name="select_from_currency">Исходная валюта</string>
+    <string name="select_to_currency">Целевая валюта</string>
+    <string name="button_convert_text">Конвертировать</string>
 </resources>
