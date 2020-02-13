@@ -8,12 +8,9 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.alexander.korovin.currency.converter.R
 import com.alexander.korovin.currency.converter.viewmodels.MainViewModel
+import com.alexander.korovin.currency.converter.viewmodels.MainViewModelFactory
 
 class MainFragment : Fragment() {
-
-    companion object {
-        fun newInstance() = MainFragment()
-    }
 
     private lateinit var viewModel: MainViewModel
 
@@ -26,7 +23,11 @@ class MainFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        initViewModel()
+    }
+
+    private fun initViewModel() {
+        viewModel = ViewModelProvider(this, MainViewModelFactory()).get(MainViewModel::class.java)
     }
 
 }

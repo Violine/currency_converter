@@ -1,5 +1,6 @@
 package com.alexander.korovin.currency.converter.network.di
 
+import com.alexander.korovin.currency.converter.repository.Repository
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -30,5 +31,11 @@ class RestApiModule(val baseUrl: String) {
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .client(client)
             .build().create(RestService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideRepository() : Repository {
+        return Repository()
     }
 }

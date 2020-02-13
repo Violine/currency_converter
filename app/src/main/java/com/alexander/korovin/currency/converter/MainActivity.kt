@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     private fun toStartScreen() {
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.container, MainFragment.newInstance())
+            .replace(R.id.container, MainFragment())
             .commitNow()
     }
 
