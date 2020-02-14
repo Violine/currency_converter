@@ -6,5 +6,5 @@ import com.alexander.korovin.currency.converter.network.model.CurrencyResponseMo
 import io.reactivex.Observable
 
 interface NetworkRepository {
-    fun fetchCurrencyData () : Observable<CurrencyResponseModel>
+    fun fetchCurrencyData () : LiveData<ArrayList<Currency>>
 }

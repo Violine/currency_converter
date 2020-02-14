@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.alexander.korovin.currency.converter.R
 import com.alexander.korovin.currency.converter.viewmodels.MainViewModel
@@ -28,6 +29,9 @@ class MainFragment : Fragment() {
 
     private fun initViewModel() {
         viewModel = ViewModelProvider(this, MainViewModelFactory()).get(MainViewModel::class.java)
+        viewModel.currencyList.observe(viewLifecycleOwner, Observer {
+            //handle
+        } )
     }
 
 }

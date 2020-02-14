@@ -10,6 +10,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import retrofit2.Callback
 import javax.inject.Inject
 
 class Repository : NetworkRepository, LocalRepository {
@@ -20,11 +21,20 @@ class Repository : NetworkRepository, LocalRepository {
         App.instance.restApiComponent.inject(this)
     }
 
-    override fun fetchCurrencyData(): Observable<CurrencyResponseModel> {
-        return restService.getCurrencyData()
+    override fun fetchCurrencyData(): LiveData<ArrayList<Currency>> {
+       // restService.getCurrencyData().enqueue()
+        return MutableLiveData<ArrayList<Currency>>()
     }
 
     override fun getCurrencyDataFromDataBase(): LiveData<ArrayList<Currency>> {
         return MutableLiveData<ArrayList<Currency>>()
+    }
+
+    fun getCurrencyList(currencyMap: Map<String, Double>): ArrayList<Currency> {
+        var currencyList = ArrayList<Currency>()
+        for ((k, v) in currencyMap) {
+            currencyList.add(Currency(k, v))
+        }
+        return currencyList
     }
 }

@@ -1,5 +1,7 @@
 package com.alexander.korovin.currency.converter.viewmodels
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.alexander.korovin.currency.converter.network.model.Currency
 import com.alexander.korovin.currency.converter.repository.Repository
@@ -9,25 +11,9 @@ import io.reactivex.schedulers.Schedulers
 
 class MainViewModel (var repository: Repository) : ViewModel() {
 
-    init {
-        repository.fetchCurrencyData()
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(
-                onNext = {
-                    var list = getCurrencyList(it.rates)
-                    list.size
-                },
-                onError = { it.printStackTrace() },
-                onComplete = { println("Done!") }
-            )
-    }
+    var currencyList: LiveData<ArrayList<Currency>> = MutableLiveData()
 
-    fun getCurrencyList(currencyMap: Map<String, Double>): ArrayList<Currency> {
-        var currencyList = ArrayList<Currency>()
-        for ((k, v) in currencyMap) {
-            currencyList.add(Currency(k, v))
-        }
-        return currencyList
+    init {
+        currencyList = repository.fetchCurrencyData()
     }
 }
