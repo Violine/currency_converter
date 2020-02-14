@@ -1,7 +1,7 @@
 package com.alexander.korovin.currency.converter
 
 import android.app.Application
-import com.alexander.korovin.currency.converter.network.di.DaggerRestApiComponent
+import com.alexander.korovin.currency.converter.database.di.DataBaseComponent
 import com.alexander.korovin.currency.converter.network.di.RestApiComponent
 import com.alexander.korovin.currency.converter.network.di.RestApiModule
 
@@ -10,18 +10,31 @@ class App : Application() {
         lateinit var instance : App
     }
 
-    val currencyServiceUrl : String = "https://api.exchangerate-api.com/v4/latest/"
+    lateinit var appComponent: AppComponent
     lateinit var restApiComponent: RestApiComponent
+    lateinit var dataBaseComponent: DataBaseComponent
 
     override fun onCreate() {
         super.onCreate()
         instance = this
+        appComponent = initAppComponent()
         restApiComponent = initRestApiComponent()
+        dataBaseComponent = initDataBaseComponent()
     }
 
     private fun initRestApiComponent(): RestApiComponent {
         return DaggerRestApiComponent.builder()
-            .restApiModule(RestApiModule(currencyServiceUrl))
+            .resApiModule(RestApiModule(Constanst.CURRENCY_RATE_BASE_URL))
+            .build()
+    }
+
+    private fun initDataBaseComponent() : DataBaseComponent {
+        return DaggerDataBaseComponent().create()
+    }
+
+    private fun initAppComponent(): AppComponent {
+        return DaggerAppComponent.builder()
+            .appModule(AppModule(this))
             .build()
     }
 }

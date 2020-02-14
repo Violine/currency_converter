@@ -26,6 +26,7 @@ ext {
     retrofit_version = "2.4.0"
     lifecycle_viewmodel_version = "2.2.0"
     dagger2_version = "2.26"
+    room_version = "2.2.3"
 }
 
 dependencies {
@@ -46,7 +47,9 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxjava:2.2.10"
     implementation 'io.reactivex.rxjava2:rxkotlin:2.4.0'
     //room database
-
+    implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.legacy:legacy-support-v4:1.0.0"
+    kapt "androidx.room:room-compiler:$room_version"
     //dagger2
     implementation "com.google.dagger:dagger:$dagger2_version"
     implementation "com.google.dagger:dagger-android:$dagger2_version"

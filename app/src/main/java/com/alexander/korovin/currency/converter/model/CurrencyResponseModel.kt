@@ -1,4 +1,4 @@
-package com.alexander.korovin.currency.converter.network.model
+package com.alexander.korovin.currency.converter.model
 
 data class CurrencyResponseModel(
     val base: String,

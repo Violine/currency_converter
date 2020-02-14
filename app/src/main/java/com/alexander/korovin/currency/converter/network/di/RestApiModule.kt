@@ -1,6 +1,10 @@
 package com.alexander.korovin.currency.converter.network.di
 
-import com.alexander.korovin.currency.converter.repository.Repository
+import androidx.room.Room
+import com.alexander.korovin.currency.converter.App
+import com.alexander.korovin.currency.converter.Constanst
+import com.alexander.korovin.currency.converter.database.CurrencyDao
+import com.alexander.korovin.currency.converter.database.CurrencyDataBase
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -35,7 +39,13 @@ class RestApiModule(val baseUrl: String) {
 
     @Singleton
     @Provides
-    fun provideRepository() : Repository {
-        return Repository()
+    fun provideDataBase(application : App): CurrencyDataBase {
+        return Room.databaseBuilder(application, CurrencyDataBase::class.java, Constanst.DATABASE_NAME).build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideCurrencyDao (dataBase: CurrencyDataBase) : CurrencyDao {
+        return dataBase.getCurrencyDao()
     }
 }

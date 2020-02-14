@@ -13,7 +13,7 @@ class MainViewModelFactory : ViewModelProvider.Factory {
     lateinit var repository: Repository
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        App.instance.restApiComponent.inject(this)
+        App.instance.appComponent.inject(this)
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
             return MainViewModel(repository) as T
         }

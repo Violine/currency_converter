@@ -1,16 +1,18 @@
 package com.alexander.korovin.currency.converter.viewmodels
 
 import androidx.lifecycle.ViewModel
-import com.alexander.korovin.currency.converter.network.model.Currency
+import com.alexander.korovin.currency.converter.model.Currency
 import com.alexander.korovin.currency.converter.repository.Repository
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 
-class MainViewModel (var repository: Repository) : ViewModel() {
+class MainViewModel(var repository: Repository) : ViewModel() {
+    var fetchCurrencyDisposable: Disposable
 
     init {
-        repository.fetchCurrencyData()
+        fetchCurrencyDisposable = repository.fetchCurrencyData()
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
