@@ -1,5 +1,6 @@
-package com.alexander.korovin.currency.converter
+package com.alexander.korovin.currency.converter.di
 
+import com.alexander.korovin.currency.converter.App
 import com.alexander.korovin.currency.converter.repository.Repository
 import dagger.Module
 import dagger.Provides

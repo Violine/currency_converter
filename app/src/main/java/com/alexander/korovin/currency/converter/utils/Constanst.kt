@@ -1,4 +1,4 @@
-package com.alexander.korovin.currency.converter
+package com.alexander.korovin.currency.converter.utils
 
 class Constanst {
     companion object {

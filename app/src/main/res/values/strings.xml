@@ -7,4 +7,11 @@
     <string name="select_from_currency">Исходная валюта</string>
     <string name="select_to_currency">Целевая валюта</string>
     <string name="button_convert_text">Конвертировать</string>
+    <string name="toolbar_title_text">Конвертер валют</string>
+    <string name="message_error_empty_field">Пожалуйста заполните пустые поля</string>
+    <string name="error_unknown_message">Неизвестная ошибка</string>
+    <string name="error_empty_field_message">Пожалуйста заполните все поля</string>
+    <string name="error_no_currency_data_message">Нет данных о курсах валют</string>
+    <string name="error_network_message">Ошибка загрузки из сети</string>
+    <string name="hint_enter_quantity">Введите количество</string>
 </resources>

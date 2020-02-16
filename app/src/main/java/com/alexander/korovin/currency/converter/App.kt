@@ -1,9 +1,11 @@
 package com.alexander.korovin.currency.converter
 
 import android.app.Application
-import com.alexander.korovin.currency.converter.database.di.DataBaseComponent
-import com.alexander.korovin.currency.converter.network.di.RestApiComponent
+import com.alexander.korovin.currency.converter.di.AppComponent
+import com.alexander.korovin.currency.converter.di.AppModule
+import com.alexander.korovin.currency.converter.di.DaggerAppComponent
 import com.alexander.korovin.currency.converter.network.di.RestApiModule
+import com.alexander.korovin.currency.converter.utils.Constanst
 
 class App : Application() {
     companion object {
@@ -11,30 +13,17 @@ class App : Application() {
     }
 
     lateinit var appComponent: AppComponent
-    lateinit var restApiComponent: RestApiComponent
-    lateinit var dataBaseComponent: DataBaseComponent
 
     override fun onCreate() {
         super.onCreate()
         instance = this
         appComponent = initAppComponent()
-        restApiComponent = initRestApiComponent()
-        dataBaseComponent = initDataBaseComponent()
-    }
-
-    private fun initRestApiComponent(): RestApiComponent {
-        return DaggerRestApiComponent.builder()
-            .resApiModule(RestApiModule(Constanst.CURRENCY_RATE_BASE_URL))
-            .build()
-    }
-
-    private fun initDataBaseComponent() : DataBaseComponent {
-        return DaggerDataBaseComponent().create()
     }
 
     private fun initAppComponent(): AppComponent {
         return DaggerAppComponent.builder()
             .appModule(AppModule(this))
+            .restApiModule(RestApiModule(Constanst.CURRENCY_RATE_BASE_URL))
             .build()
     }
 }

@@ -11,7 +11,7 @@ import com.google.android.material.circularreveal.CircularRevealHelper
 @Dao
 interface CurrencyDao {
     @Query("SELECT * FROM currency_items")
-    fun getAll(): LiveData<List<Currency>>
+    fun getAll(): List<Currency>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(list: List<Currency>)
