@@ -19,9 +19,10 @@ import kotlin.collections.ArrayList
 
 class MainViewModel(var repository: Repository) : ViewModel() {
 
-    var fromCurrency: Currency? = null
-    var toCurrency: Currency? = null
+    var toCurrency : Currency? = null
+    var fromCurrency : Currency? = null
     var quantity: Double = 0.0
+    var currencyList : List<Currency> = emptyList()
 
     var state: MutableLiveData<CurrencyListState> = MutableLiveData()
 
@@ -38,13 +39,17 @@ class MainViewModel(var repository: Repository) : ViewModel() {
 
     @SuppressLint("CheckResult")
     fun getCurrencyList() {
-        repository.getCurrencyData()
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(
-                onNext = { onCurrencyListReady(it) },
-                onError = { onNetworkError() }
-            )
+        if (currencyList.isEmpty()) {
+            repository.getCurrencyData()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                    onNext = { onCurrencyListReady(it) },
+                    onError = { onNetworkError() }
+                )
+        } else {
+            postCurrencyList(currencyList)
+        }
     }
 
     @SuppressLint("CheckResult")
@@ -59,7 +64,7 @@ class MainViewModel(var repository: Repository) : ViewModel() {
                 },
                 onNext = {
                     if (it.isNotEmpty()) {
-                        state.value = ReadyState(it)
+                        postCurrencyList (it)
                     } else {
                         state.value = ErrorState(ErrorCode.NO_CURRENCY_DATA_ERROR, emptyList())
                     }
@@ -73,12 +78,18 @@ class MainViewModel(var repository: Repository) : ViewModel() {
         if (currencyList.isNotEmpty()) {
             Observable.fromCallable {
                 repository.database.insert(currencyList)
-            }.subscribeOn(Schedulers.newThread())
-                .subscribe()
-            state.value = ReadyState(currencyList)
+            }.subscribeOn(Schedulers.newThread()).subscribe()
+            postCurrencyList(currencyList)
         } else {
             onNetworkError()
         }
+    }
+
+    private fun postCurrencyList(list: List<Currency>) {
+        currencyList = list
+        state.value = ReadyState(list)
+        if (fromCurrency == null) fromCurrency = list.get(0)
+        if (toCurrency == null) toCurrency = list.get(0)
     }
 
     private fun getCurrencyList(currencyMap: Map<String, Double>): ArrayList<Currency> {
@@ -89,12 +100,13 @@ class MainViewModel(var repository: Repository) : ViewModel() {
         return currencyList
     }
 
-    fun convertCurrency(fromCurrency: Currency, toCurrency: Currency, quantity: Double) {
-        this.fromCurrency = fromCurrency
-        this.toCurrency = toCurrency
-        this.quantity = quantity
-        var result: Double = (toCurrency.value / fromCurrency.value) * quantity
-        var roundResult : Double = BigDecimal(result).setScale(2, RoundingMode.HALF_UP).toDouble()
-        state.value = ConvertResultState(roundResult, emptyList())
+    fun convertCurrency() {
+        if (toCurrency != null && fromCurrency != null) {
+            var result: Double = (toCurrency!!.value/ fromCurrency!!.value) * quantity
+            var roundResult: Double = BigDecimal(result).setScale(2, RoundingMode.HALF_UP).toDouble()
+            state.value = ConvertResultState(roundResult, emptyList())
+        } else {
+            state.value = ErrorState(ErrorCode.EMPTY_FIELD_ERROR, emptyList())
+        }
     }
 }

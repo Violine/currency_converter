@@ -3,6 +3,8 @@ package com.alexander.korovin.currency.converter.ui.fragments
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,23 +12,26 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.widget.ContentLoadingProgressBar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.alexander.korovin.currency.converter.R
 import com.alexander.korovin.currency.converter.model.Currency
+import com.alexander.korovin.currency.converter.utils.CustomSpinnerOnTouchListener
+import com.alexander.korovin.currency.converter.utils.CustomSpinnerOnTouchListener.SelectCallback
 import com.alexander.korovin.currency.converter.utils.ErrorCode
 import com.alexander.korovin.currency.converter.viewmodels.*
 import kotlinx.android.synthetic.main.main_fragment.*
-import kotlinx.android.synthetic.main.main_fragment.view.*
+import java.lang.NumberFormatException
 
 
 class MainFragment : Fragment() {
 
+    private lateinit var spinnerAdapter: ArrayAdapter<Currency>
     lateinit private var progressView: ContentLoadingProgressBar
-    private lateinit var viewModel: MainViewModel
+    private val viewModel by lazy {ViewModelProvider(requireActivity(), MainViewModelFactory()).get(MainViewModel::class.java)}
+
     private var stateObserver = Observer<CurrencyListState> { state ->
         state?.let {
             when (state) {
@@ -50,9 +55,18 @@ class MainFragment : Fragment() {
     }
 
     private fun initSpinners(currencyList: List<Currency>) {
-        val adapter: ArrayAdapter<Currency> = ArrayAdapter<Currency>(requireContext(), R.layout.spinner_layout, currencyList)
-        from_spinner.adapter = adapter
-        to_spinner.adapter = adapter
+        spinnerAdapter = ArrayAdapter<Currency>(requireContext(), R.layout.spinner_layout, currencyList)
+        to_spinner.apply {
+            adapter = spinnerAdapter
+            setSelection(spinnerAdapter.getPosition(viewModel.toCurrency))
+        }
+
+        from_spinner.apply {
+            adapter = spinnerAdapter
+            setSelection(spinnerAdapter.getPosition(viewModel.fromCurrency))
+        }
+
+        viewModel.quantity.let {quantity.setText(viewModel.quantity.toString())}
     }
 
     override fun onCreateView(
@@ -66,7 +80,6 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initViewModel()
-        savedInstanceState?.let { viewModel.restoreCurrencyList() } ?: viewModel.getCurrencyList()
     }
 
     private fun initView() {
@@ -74,26 +87,40 @@ class MainFragment : Fragment() {
             title = getString(R.string.toolbar_title_text)
             setTitleTextColor(ContextCompat.getColor(requireContext(), R.color.white))
         }
-        button_convert.setOnClickListener({ _ ->
-            run {
-                var toCurrency: Currency = to_spinner.selectedItem as Currency
-                var fromCurrency: Currency = from_spinner.selectedItem as Currency
-                var currencyQuantity: String = quantity_input_layout.quantity.text.toString().trim()
-                if (currencyQuantity.isNotEmpty()) {
-                    viewModel.convertCurrency(fromCurrency, toCurrency, currencyQuantity.toDouble())
-                } else {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.error_empty_field_message),
-                        Toast.LENGTH_SHORT
-                    ).show()
+        quantity.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {}
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                if (!p0.isNullOrBlank()) {
+                    try {
+                        viewModel.quantity = p0.toString().toDouble()
+                    } catch (e: NumberFormatException) {
+                        showToast(getString(R.string.error_please_enter_numeric))
+                    }
                 }
             }
         })
+        button_convert.setOnClickListener({ _ -> viewModel.convertCurrency() })
+        val fromSpinnerListener = CustomSpinnerOnTouchListener (object : SelectCallback {
+            override fun onItemSelected(position: Int) {
+                viewModel.fromCurrency = spinnerAdapter.getItem(position)
+            }
+        })
+        val toSpinnerListener = CustomSpinnerOnTouchListener (object : SelectCallback {
+            override fun onItemSelected(position: Int) {
+                viewModel.toCurrency = spinnerAdapter.getItem(position)
+            }
+        })
+        from_spinner.setOnTouchListener(fromSpinnerListener)
+        to_spinner.setOnTouchListener(toSpinnerListener)
+        from_spinner.onItemSelectedListener = fromSpinnerListener
+        to_spinner.onItemSelectedListener = toSpinnerListener
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(this, MainViewModelFactory()).get(MainViewModel::class.java)
+        viewModel.getCurrencyList()
         viewModel.state.observe(viewLifecycleOwner, stateObserver)
     }
 

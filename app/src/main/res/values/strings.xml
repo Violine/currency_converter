@@ -14,4 +14,5 @@
     <string name="error_no_currency_data_message">Нет данных о курсах валют</string>
     <string name="error_network_message">Ошибка загрузки из сети</string>
     <string name="hint_enter_quantity">Введите количество</string>
+    <string name="error_please_enter_numeric">Пожалуйста введите число</string>
 </resources>
