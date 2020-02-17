@@ -68,7 +68,6 @@ class MainViewModel(var repository: Repository) : ViewModel() {
                     } else {
                         state.value = ErrorState(ErrorCode.NO_CURRENCY_DATA_ERROR, emptyList())
                     }
-
                 }
             )
     }
